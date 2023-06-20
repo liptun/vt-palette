@@ -1,0 +1,6 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(dirname $0)/../dist/vt-palette.js
+CWD=$(pwd)
+
+node ${SCRIPT_PATH} "$CWD" "$@"
