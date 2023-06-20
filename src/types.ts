@@ -8,3 +8,11 @@ export type MaterialsJson = {
     Specular: number;
   }>;
 };
+
+export enum MaterialType {
+  Diffuse = "diffuse",
+  Emission = "emission",
+  Glassiness = "glassiness",
+  Smoothness = "smoothness",
+  Specular = "specular",
+}

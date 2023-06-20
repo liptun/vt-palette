@@ -4,12 +4,20 @@ import { join } from "path";
 import { readMaterialsJson } from "./readMaterialsJson.js";
 import { createImageBufferFromMaterials } from "./imageCreator.js";
 import { writeImage } from "./writeImage.js";
+import {
+  combinedImageTask,
+  diffuseImageTask,
+  emissionImageTask,
+  glassinessImageTask,
+  smoothnessImageTask,
+  specularImageTask,
+} from "./queueItems.js";
 
 const [_, __, cwd, ...args] = process.argv;
 
 type ArgsData = {
   inputFile?: string;
-  outputFile?: string;
+  outputDir?: string;
   flags: string[];
 };
 const argsData = args.reduce<ArgsData>(
@@ -20,14 +28,14 @@ const argsData = args.reduce<ArgsData>(
     } else if (!draftAcc.inputFile) {
       draftAcc.inputFile = arg;
     } else {
-      draftAcc.outputFile = arg;
+      draftAcc.outputDir = arg;
     }
     return draftAcc;
   },
-  { inputFile: undefined, outputFile: undefined, flags: [] } as ArgsData
+  { inputFile: undefined, outputDir: undefined, flags: [] } as ArgsData
 );
 
-const { inputFile, outputFile, flags } = argsData;
+const { inputFile, outputDir, flags } = argsData;
 
 const inputFilePath = fs.existsSync(inputFile || "")
   ? inputFile
@@ -35,16 +43,7 @@ const inputFilePath = fs.existsSync(inputFile || "")
 
 const inputFileExists = fs.existsSync(inputFilePath || "");
 
-const outputFilePath = outputFile
-  ? fs.existsSync(outputFile) && fs.lstatSync(outputFile).isDirectory()
-    ? `${outputFile}/palatte.png`
-    : outputFile
-  : join(cwd, "palette.png");
-
-if (outputFile && !outputFile?.endsWith(".png")) {
-  console.log(chalk.red("Output must be png filetype"));
-  process.exit(1);
-}
+const outputDirPath = outputDir ?? cwd;
 
 if (flags.includes("-v")) {
   console.log("Voxel Tycoon image palette creator v1.0");
@@ -53,11 +52,18 @@ if (flags.includes("-v")) {
 if (flags.includes("-h")) {
   console.log(`Voxel Tycoon image palette creator is a tool for creating grid image texture form *.obj.meta files
 ${chalk.yellow("Usage:")}
-vt-palette <path/to/obj/meta/file> <path/to/save/location/of/image>
+vt-palette <path/to/obj/meta/file> <path/to/output/dir> [-d,-e]
 
 ${chalk.yellow("Available params:")}
-${chalk.blue.bold("- v")}: shows script version
-${chalk.blue.bold("- m")}: shows this manual
+${chalk.blue.bold("-v")}: shows script version
+${chalk.blue.bold("-m")}: shows this manual
+${chalk.yellow("Output options:")}
+${chalk.blue.bold("-d")}: Include diffuse map image
+${chalk.blue.bold("-e")}: Include emission map image
+${chalk.blue.bold("-g")}: Include glassiness map image
+${chalk.blue.bold("-s")}: Include smoothness map image
+${chalk.blue.bold("-sp")}: Include specular map image
+${chalk.blue.bold("-a")}: Include all maps images
 `);
   process.exit(0);
 }
@@ -71,10 +77,28 @@ const main = () => {
   inputFilePath &&
     readMaterialsJson(inputFilePath)
       .then((materials) => {
-        const imageBufer = createImageBufferFromMaterials(materials);
-        writeImage(imageBufer, outputFilePath)
-          .then((m) => console.log(chalk.green(m)))
-          .catch((e) => console.log(chalk(e)));
+        let createImagesQueue = [];
+        flags.includes("-d") && createImagesQueue.push(diffuseImageTask);
+        flags.includes("-e") && createImagesQueue.push(emissionImageTask);
+        flags.includes("-g") && createImagesQueue.push(glassinessImageTask);
+        flags.includes("-s") && createImagesQueue.push(smoothnessImageTask);
+        flags.includes("-sp") && createImagesQueue.push(specularImageTask);
+        if (flags.includes("-a")) {
+          createImagesQueue = [...combinedImageTask];
+        }
+
+        createImagesQueue.length === 0 &&
+          createImagesQueue.push({ ...diffuseImageTask, suffix: "" });
+
+        createImagesQueue.forEach(({ materialType, suffix }) => {
+          const imageBufer = createImageBufferFromMaterials(
+            materials,
+            materialType
+          );
+          writeImage(imageBufer, join(outputDirPath, `palette${suffix}.png`))
+            .then((m) => console.log(chalk.green(m)))
+            .catch((e) => console.log(chalk(e)));
+        });
       })
       .catch((e) => {
         console.log(chalk.red(e));

@@ -12,4 +12,12 @@ Helper for creating 3D models for Voxel Tycoon game. It converts .obj.meta file 
 
 ## Usage
 From terminal invoke `vt-palette <path/to/obj.meta>`. This will create palette.png file next to obj.meta file.
-You can specify output path by providing second argument like this: `vt-palette <path/to/obj.meta> <path/to/save/palette.png>`
+You can specify output directory by providing second argument like this: `vt-palette <path/to/obj.meta> <path/to/output/dir>`
+
+Script also allows to specify which material maps to create, just pass flags listed bellow:
+-d: Include diffuse map image
+-e: Include emission map image
+-g: Include glassiness map image
+-s: Include smoothness map image
+-sp: Include specular map image
+-a: Include all maps images
