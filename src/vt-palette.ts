@@ -52,7 +52,12 @@ if (flags.includes("-v")) {
 if (flags.includes("-h")) {
   console.log(`Voxel Tycoon image palette creator is a tool for creating grid image texture form *.obj.meta files
 ${chalk.yellow("Usage:")}
-vt-palette <path/to/obj/meta/file> <path/to/output/dir> [-d,-e]
+vt-palette <path/to/obj/meta/file> <path/to/output/dir> [output options]
+
+examples:
+  vt-palette train.obj.meta
+  vt-palette train.obj.meta ~/Desktop
+  vt-palette train.obj.meta ~/Desktop -d -e
 
 ${chalk.yellow("Available params:")}
 ${chalk.blue.bold("-v")}: shows script version
@@ -106,4 +111,8 @@ const main = () => {
       });
 };
 
-inputFile && main();
+if (typeof inputFile === "undefined") {
+  console.log(chalk.red("You need to specify input file!"), chalk.yellow("Use vt-palette -h for help"));
+  process.exit(1);
+}
+main();
