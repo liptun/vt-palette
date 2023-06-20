@@ -74,6 +74,7 @@ try {
   const pngData = canvas.encodeSync("png");
   const outputFilePath = outputFile ? outputFile : join(cwd, "palette.png");
   fs.writeFileSync(outputFilePath, pngData);
+  console.log(chalk.green(`Image saved to ${outputFilePath}`));
 } catch (e) {
   console.log(chalk.red("Provided file is not valid JSON file"));
   process.exit(1);
