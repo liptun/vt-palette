@@ -19,5 +19,17 @@ Script also allows to specify which material maps to create, just pass flags lis
 - -e: Include emission map image
 - -g: Include glassiness map image
 - -s: Include smoothness map image
-- -sp: Include specular map image
+- -S: Include specular map image
 - -a: Include all maps images
+
+## Changelog
+
+### 1.1
+- Added support for groups of flags as CLI params.
+ex:
+    vt-palette <path/to/obj.meta> <path/to/output/dir> -dsS
+instead of
+    vt-palette <path/to/obj.meta> <path/to/output/dir> -d -s -S
+
+### 1.0
+- Release

@@ -24,7 +24,7 @@ const argsData = args.reduce<ArgsData>(
   (acc, arg) => {
     const draftAcc = { ...acc };
     if (arg.startsWith("-")) {
-      draftAcc.flags.push(arg);
+      draftAcc.flags = [...draftAcc.flags, ...arg.substring(1).split('')]
     } else if (!draftAcc.inputFile) {
       draftAcc.inputFile = arg;
     } else {
@@ -46,7 +46,7 @@ const inputFileExists = fs.existsSync(inputFilePath || "");
 const outputDirPath = outputDir ?? cwd;
 
 if (flags.includes("-v")) {
-  console.log("Voxel Tycoon image palette creator v1.0");
+  console.log("Voxel Tycoon image palette creator v1.1");
   process.exit(0);
 }
 if (flags.includes("-h")) {
@@ -67,7 +67,7 @@ ${chalk.blue.bold("-d")}: Include diffuse map image
 ${chalk.blue.bold("-e")}: Include emission map image
 ${chalk.blue.bold("-g")}: Include glassiness map image
 ${chalk.blue.bold("-s")}: Include smoothness map image
-${chalk.blue.bold("-sp")}: Include specular map image
+${chalk.blue.bold("-S")}: Include specular map image
 ${chalk.blue.bold("-a")}: Include all maps images
 `);
   process.exit(0);
@@ -83,12 +83,12 @@ const main = () => {
     readMaterialsJson(inputFilePath)
       .then((materials) => {
         let createImagesQueue = [];
-        flags.includes("-d") && createImagesQueue.push(diffuseImageTask);
-        flags.includes("-e") && createImagesQueue.push(emissionImageTask);
-        flags.includes("-g") && createImagesQueue.push(glassinessImageTask);
-        flags.includes("-s") && createImagesQueue.push(smoothnessImageTask);
-        flags.includes("-sp") && createImagesQueue.push(specularImageTask);
-        if (flags.includes("-a")) {
+        flags.includes("d") && createImagesQueue.push(diffuseImageTask);
+        flags.includes("e") && createImagesQueue.push(emissionImageTask);
+        flags.includes("g") && createImagesQueue.push(glassinessImageTask);
+        flags.includes("s") && createImagesQueue.push(smoothnessImageTask);
+        flags.includes("S") && createImagesQueue.push(specularImageTask);
+        if (flags.includes("a")) {
           createImagesQueue = [...combinedImageTask];
         }
 

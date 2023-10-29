@@ -16,3 +16,4 @@ export enum MaterialType {
   Smoothness = "smoothness",
   Specular = "specular",
 }
+
