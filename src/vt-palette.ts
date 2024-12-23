@@ -45,11 +45,11 @@ const inputFileExists = fs.existsSync(inputFilePath || "");
 
 const outputDirPath = outputDir ?? cwd;
 
-if (flags.includes("-v")) {
+if (flags.includes("v")) {
   console.log("Voxel Tycoon image palette creator v1.1");
   process.exit(0);
 }
-if (flags.includes("-h")) {
+if (flags.includes("h")) {
   console.log(`Voxel Tycoon image palette creator is a tool for creating grid image texture form *.obj.meta files
 ${chalk.yellow("Usage:")}
 vt-palette <path/to/obj/meta/file> <path/to/output/dir> [output options]

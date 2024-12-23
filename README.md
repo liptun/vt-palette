@@ -24,6 +24,9 @@ Script also allows to specify which material maps to create, just pass flags lis
 
 ## Changelog
 
+### 1.1.1
+- Fixed -h and -v flags that was unrecognized
+
 ### 1.1
 - Added support for groups of flags as CLI params.
 ex:
